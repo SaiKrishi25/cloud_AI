@@ -121,21 +121,18 @@ const StatusPanel = ({ logsProcessed, threatPercentage, logHistory = [] }: Statu
             </h3>
             <div className="h-64">
               <ChartContainer config={chartConfig}>
-                {/* Wrap ResponsiveContainer in a fragment to provide a single child */}
-                <>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Line type="monotone" dataKey="safe" stroke="hsl(var(--success))" />
-                      <Line type="monotone" dataKey="warning" stroke="hsl(var(--warning))" />
-                      <Line type="monotone" dataKey="threat" stroke="hsl(var(--destructive))" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                  <ChartLegend content={<ChartLegendContent />} />
-                </>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Line type="monotone" dataKey="safe" stroke="hsl(var(--success))" />
+                    <Line type="monotone" dataKey="warning" stroke="hsl(var(--warning))" />
+                    <Line type="monotone" dataKey="threat" stroke="hsl(var(--destructive))" />
+                  </LineChart>
+                </ResponsiveContainer>
+                <ChartLegend content={<ChartLegendContent />} />
               </ChartContainer>
             </div>
           </CardContent>
@@ -149,21 +146,18 @@ const StatusPanel = ({ logsProcessed, threatPercentage, logHistory = [] }: Statu
             </h3>
             <div className="h-64">
               <ChartContainer config={chartConfig}>
-                {/* Wrap ResponsiveContainer in a fragment to provide a single child */}
-                <>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={barData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="safe" fill="hsl(var(--success))" />
-                      <Bar dataKey="warning" fill="hsl(var(--warning))" />
-                      <Bar dataKey="threat" fill="hsl(var(--destructive))" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                  <ChartLegend content={<ChartLegendContent />} />
-                </>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={barData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
+                    <YAxis stroke="hsl(var(--muted-foreground))" />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="safe" fill="hsl(var(--success))" />
+                    <Bar dataKey="warning" fill="hsl(var(--warning))" />
+                    <Bar dataKey="threat" fill="hsl(var(--destructive))" />
+                  </BarChart>
+                </ResponsiveContainer>
+                <ChartLegend content={<ChartLegendContent />} />
               </ChartContainer>
             </div>
           </CardContent>

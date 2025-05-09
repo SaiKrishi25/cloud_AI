@@ -45,6 +45,9 @@ const Dashboard = () => {
     { time: '04:00', safe: 20, warning: 5, threat: 2 },
   ]);
   
+  // Fixed the type for the interval reference
+  const simulationInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  
   // Initialize unique resources
   useEffect(() => {
     const uniqueResources = [...new Set(logs.map(log => log.resource))];
@@ -132,9 +135,11 @@ const Dashboard = () => {
     // If GCP is enabled, adjust the log simulation rate
     if (credentials.enabled) {
       // Clear existing interval and set a faster one
-      clearInterval(simulationInterval.current);
+      if (simulationInterval.current !== null) {
+        clearInterval(simulationInterval.current);
+      }
       
-      simulationInterval.current = window.setInterval(() => {
+      simulationInterval.current = setInterval(() => {
         const newLog = generateNewLog();
         setLogs(prevLogs => [newLog, ...prevLogs]);
         setLogsProcessed(prev => prev + 1);
@@ -152,10 +157,8 @@ const Dashboard = () => {
   };
   
   // Simulation of incoming logs
-  const simulationInterval = useRef<NodeJS.Timeout | null>(null);
-  
   useEffect(() => {
-    simulationInterval.current = window.setInterval(() => {
+    simulationInterval.current = setInterval(() => {
       const newLog = generateNewLog();
       setLogs(prevLogs => [newLog, ...prevLogs]);
       setLogsProcessed(prev => prev + 1);

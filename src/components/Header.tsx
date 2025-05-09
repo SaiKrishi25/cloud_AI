@@ -15,7 +15,7 @@ const Header = ({ safeCount, warningCount, threatCount }: HeaderProps) => {
       <div className="flex flex-col sm:flex-row justify-between items-center">
         <div className="flex items-center mb-4 sm:mb-0">
           <Shield className="h-8 w-8 text-primary mr-3" />
-          <h1 className="text-2xl font-bold">Log Flow Guardian AI</h1>
+          <h1 className="text-2xl font-bold">AI powered cloud security automation</h1>
         </div>
         
         <div className="flex space-x-3">

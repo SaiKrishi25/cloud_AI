@@ -14,19 +14,19 @@
     --popover: 210 50% 98%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 196 85% 57%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 217.2 32.6% 92%;
+    --secondary: 214 32% 96%;
     --secondary-foreground: 222 47% 11%;
 
-    --muted: 217.2 32.6% 92%;
-    --muted-foreground: 215 20.2% 45.1%;
+    --muted: 214 32% 92%;
+    --muted-foreground: 215 20% 45%;
 
-    --accent: 217.2 32.6% 90%;
+    --accent: 196 85% 95%;
     --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
     --success: 142 76% 36%;
@@ -35,9 +35,9 @@
     --warning: 38 92% 50%;
     --warning-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 88%;
-    --input: 217.2 32.6% 88%;
-    --ring: 224.3 76.3% 48%;
+    --border: 214 32% 90%;
+    --input: 214 32% 90%;
+    --ring: 196 85% 57%;
 
     --radius: 0.5rem;
   }
@@ -71,10 +71,26 @@
   }
 }
 
+/* Animation for fade in */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-pulse-opacity {
   animation: pulse-opacity 2s ease-in-out infinite;
 }
 
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out;
 }
