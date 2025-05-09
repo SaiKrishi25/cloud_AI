@@ -46,12 +46,11 @@ const StatusPanel = ({ logsProcessed, threatPercentage }: StatusPanelProps) => {
           </div>
           <Progress 
             value={threatPercentage} 
-            className="h-2" 
-            indicatorClassName={
-              threatPercentage < 5 ? "bg-success" : 
-              threatPercentage < 15 ? "bg-warning" : 
-              "bg-destructive"
-            } 
+            className={`h-2 ${
+              threatPercentage < 5 ? "bg-secondary [&>div]:bg-success" : 
+              threatPercentage < 15 ? "bg-secondary [&>div]:bg-warning" : 
+              "bg-secondary [&>div]:bg-destructive"
+            }`}
           />
         </CardContent>
       </Card>

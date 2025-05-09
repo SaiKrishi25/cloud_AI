@@ -1,5 +1,5 @@
 
-import { LogEntry } from '../types/log';
+import { LogEntry, LogClassification, LogSeverity } from '../types/log';
 
 export const mockLogs: LogEntry[] = [
   {
