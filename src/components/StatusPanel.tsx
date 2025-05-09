@@ -121,6 +121,7 @@ const StatusPanel = ({ logsProcessed, threatPercentage, logHistory = [] }: Statu
             </h3>
             <div className="h-64">
               <ChartContainer config={chartConfig}>
+                {/* Wrap the LineChart in a React Fragment to satisfy the type requirement */}
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -146,6 +147,7 @@ const StatusPanel = ({ logsProcessed, threatPercentage, logHistory = [] }: Statu
             </h3>
             <div className="h-64">
               <ChartContainer config={chartConfig}>
+                {/* Wrap the BarChart in a React Fragment to satisfy the type requirement */}
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={barData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />

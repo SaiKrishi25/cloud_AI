@@ -7,7 +7,7 @@ import LogList from '@/components/LogList';
 import { LogEntry, LogClassification } from '@/types/log';
 import { mockLogs, generateNewLog } from '@/data/mockLogs';
 import { toast } from '@/components/ui/sonner';
-import { AlertCircle, Settings, ChevronRight, ChevronDown } from 'lucide-react';
+import { AlertCircle, Settings } from 'lucide-react';
 import { 
   Sheet, 
   SheetContent, 
@@ -45,8 +45,8 @@ const Dashboard = () => {
     { time: '04:00', safe: 20, warning: 5, threat: 2 },
   ]);
   
-  // Fixed the type for the interval reference
-  const simulationInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Fix the type for the interval reference to be NodeJS.Timeout | null
+  const simulationInterval = useRef<NodeJS.Timeout | null>(null);
   
   // Initialize unique resources
   useEffect(() => {
@@ -139,7 +139,7 @@ const Dashboard = () => {
         clearInterval(simulationInterval.current);
       }
       
-      simulationInterval.current = setInterval(() => {
+      simulationInterval.current = window.setInterval(() => {
         const newLog = generateNewLog();
         setLogs(prevLogs => [newLog, ...prevLogs]);
         setLogsProcessed(prev => prev + 1);
@@ -158,7 +158,7 @@ const Dashboard = () => {
   
   // Simulation of incoming logs
   useEffect(() => {
-    simulationInterval.current = setInterval(() => {
+    simulationInterval.current = window.setInterval(() => {
       const newLog = generateNewLog();
       setLogs(prevLogs => [newLog, ...prevLogs]);
       setLogsProcessed(prev => prev + 1);
