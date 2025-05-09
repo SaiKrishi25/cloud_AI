@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Header from '@/components/Header';
 import SearchFilters from '@/components/SearchFilters';
 import StatusPanel from '@/components/StatusPanel';
@@ -135,7 +134,7 @@ const Dashboard = () => {
       // Clear existing interval and set a faster one
       clearInterval(simulationInterval.current);
       
-      simulationInterval.current = setInterval(() => {
+      simulationInterval.current = window.setInterval(() => {
         const newLog = generateNewLog();
         setLogs(prevLogs => [newLog, ...prevLogs]);
         setLogsProcessed(prev => prev + 1);
@@ -153,10 +152,10 @@ const Dashboard = () => {
   };
   
   // Simulation of incoming logs
-  const simulationInterval = React.useRef<number | null>(null);
+  const simulationInterval = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
-    simulationInterval.current = setInterval(() => {
+    simulationInterval.current = window.setInterval(() => {
       const newLog = generateNewLog();
       setLogs(prevLogs => [newLog, ...prevLogs]);
       setLogsProcessed(prev => prev + 1);

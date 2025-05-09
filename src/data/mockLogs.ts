@@ -1,161 +1,134 @@
-
-import { LogEntry, LogClassification, LogSeverity } from '../types/log';
+import { v4 as uuidv4 } from 'uuid';
+import { LogEntry, LogClassification, LogSeverity } from '@/types/log';
 
 export const mockLogs: LogEntry[] = [
   {
-    id: '1',
-    timestamp: new Date(Date.now() - 1000 * 60 * 2).toISOString(),
-    message: 'User authentication successful',
-    resource: 'IAM',
-    severity: 'INFO',
-    classification: 'safe',
-    source: 'Cloud IAM',
-    user: 'admin@company.com'
-  },
-  {
-    id: '2',
-    timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
-    message: 'Multiple failed login attempts detected',
-    resource: 'IAM',
-    severity: 'WARNING',
-    classification: 'warning',
-    source: 'Cloud IAM',
-    user: 'unknown',
-    details: '5 failed attempts from IP 203.0.113.42'
-  },
-  {
-    id: '3',
-    timestamp: new Date(Date.now() - 1000 * 60 * 8).toISOString(),
-    message: 'Storage bucket permissions changed',
-    resource: 'Cloud Storage',
-    severity: 'INFO',
-    classification: 'safe',
-    source: 'Google Cloud Storage',
-    user: 'devops@company.com'
-  },
-  {
-    id: '4',
-    timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-    message: 'Unusual API access pattern detected',
-    resource: 'Compute Engine',
-    severity: 'WARNING',
-    classification: 'warning',
-    source: 'Cloud Audit',
-    details: 'High frequency of API calls from rare location'
-  },
-  {
-    id: '5',
-    timestamp: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
-    message: 'Potential privilege escalation attempt',
-    resource: 'IAM',
-    severity: 'CRITICAL',
-    classification: 'threat',
-    source: 'Cloud IAM',
-    user: 'support@company.com',
-    details: 'Attempted to modify admin role permissions'
-  },
-  {
-    id: '6',
-    timestamp: new Date(Date.now() - 1000 * 60 * 32).toISOString(),
-    message: 'Network firewall rule modified',
-    resource: 'VPC',
-    severity: 'INFO',
-    classification: 'safe',
-    source: 'Cloud VPC',
-    user: 'network-admin@company.com'
-  },
-  {
-    id: '7',
-    timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-    message: 'Suspicious outbound data transfer',
-    resource: 'Compute Engine',
+    id: uuidv4(),
+    timestamp: '2024-07-23T10:00:00Z',
+    message: 'Authentication failed for user JohnDoe from 192.168.1.100',
+    resource: 'Authentication Service',
     severity: 'ERROR',
     classification: 'threat',
-    source: 'Cloud DLP',
-    details: 'Large volume of data transferred to unrecognized external IP'
+    source: 'Firewall',
+    user: 'JohnDoe',
+    details: 'Multiple failed login attempts detected.'
   },
   {
-    id: '8',
-    timestamp: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-    message: 'VM instance created',
-    resource: 'Compute Engine',
-    severity: 'INFO',
-    classification: 'safe',
-    source: 'Compute Engine',
-    user: 'deployment@company.com'
-  },
-  {
-    id: '9',
-    timestamp: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
-    message: 'Billing threshold exceeded',
-    resource: 'Billing',
+    id: uuidv4(),
+    timestamp: '2024-07-23T10:05:00Z',
+    message: 'CPU usage high on server DB-002',
+    resource: 'DB-002',
     severity: 'WARNING',
     classification: 'warning',
-    source: 'Cloud Billing',
-    details: 'Daily spending limit exceeded by 15%'
+    source: 'Monitoring System',
+    details: 'CPU utilization exceeded 90% for 5 minutes.'
   },
   {
-    id: '10',
-    timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-    message: 'Database access from unauthorized location',
-    resource: 'Cloud SQL',
+    id: uuidv4(),
+    timestamp: '2024-07-23T10:10:00Z',
+    message: 'Successful database backup completed',
+    resource: 'Backup Service',
+    severity: 'INFO',
+    classification: 'safe',
+    source: 'Backup System'
+  },
+  {
+    id: uuidv4(),
+    timestamp: '2024-07-23T10:15:00Z',
+    message: 'Malware detected in file upload by user JaneDoe',
+    resource: 'File Upload Service',
     severity: 'CRITICAL',
     classification: 'threat',
-    source: 'Cloud SQL',
-    details: 'Admin access from unrecognized IP address'
+    source: 'Antivirus',
+    user: 'JaneDoe',
+    details: 'Trojan detected in uploaded file.'
+  },
+  {
+    id: uuidv4(),
+    timestamp: '2024-07-23T10:20:00Z',
+    message: 'Memory usage critical on server APP-001',
+    resource: 'APP-001',
+    severity: 'ERROR',
+    classification: 'threat',
+    source: 'Monitoring System',
+    details: 'Memory utilization exceeded 95% causing service degradation.'
+  },
+  {
+    id: uuidv4(),
+    timestamp: '2024-07-23T10:25:00Z',
+    message: 'Firewall blocked connection attempt from suspicious IP 10.0.0.5',
+    resource: 'Firewall',
+    severity: 'WARNING',
+    classification: 'warning',
+    source: 'Firewall',
+    details: 'Connection blocked due to blacklisted IP address.'
+  },
+  {
+    id: uuidv4(),
+    timestamp: '2024-07-23T10:30:00Z',
+    message: 'Application update deployed successfully',
+    resource: 'Deployment Service',
+    severity: 'INFO',
+    classification: 'safe',
+    source: 'Deployment System'
+  },
+  {
+    id: uuidv4(),
+    timestamp: '2024-07-23T10:35:00Z',
+    message: 'Unusual network activity detected from server WEB-001',
+    resource: 'WEB-001',
+    severity: 'WARNING',
+    classification: 'warning',
+    source: 'Network Monitoring',
+    details: 'High outbound traffic detected.'
+  },
+  {
+    id: uuidv4(),
+    timestamp: '2024-07-23T10:40:00Z',
+    message: 'User access granted to sensitive data',
+    resource: 'Access Control',
+    severity: 'INFO',
+    classification: 'safe',
+    source: 'Authorization System',
+    user: 'Alice'
+  },
+  {
+    id: uuidv4(),
+    timestamp: '2024-07-23T10:45:00Z',
+    message: 'Potential SQL injection attempt blocked',
+    resource: 'Database Security',
+    severity: 'CRITICAL',
+    classification: 'threat',
+    source: 'Intrusion Detection System',
+    details: 'SQL injection pattern detected in user input.'
   }
 ];
 
+// Function to generate a new mock log entry
 export const generateNewLog = (): LogEntry => {
-  const classifications: LogClassification[] = ['safe', 'warning', 'threat'];
   const severities: LogSeverity[] = ['INFO', 'WARNING', 'ERROR', 'CRITICAL'];
-  const resources = ['IAM', 'Compute Engine', 'Cloud Storage', 'Cloud SQL', 'VPC', 'Billing'];
-  const users = ['admin@company.com', 'devops@company.com', 'user@company.com', 'unknown'];
-  
-  const randomClassification = classifications[Math.floor(Math.random() * classifications.length)];
-  const randomSeverity = severities[Math.floor(Math.random() * severities.length)];
-  const randomResource = resources[Math.floor(Math.random() * resources.length)];
-  const randomUser = Math.random() > 0.3 ? users[Math.floor(Math.random() * users.length)] : undefined;
-  
-  let message = '';
-  if (randomClassification === 'safe') {
-    message = [
-      'User authentication successful',
-      'Resource access granted',
-      'Configuration updated',
-      'Backup completed successfully',
-      'VM instance created',
-      'Storage bucket permissions updated'
-    ][Math.floor(Math.random() * 6)];
-  } else if (randomClassification === 'warning') {
-    message = [
-      'Multiple failed login attempts',
-      'Unusual API access pattern',
-      'Billing threshold exceeded',
-      'High CPU utilization detected',
-      'Low storage space warning',
-      'Network latency increased'
-    ][Math.floor(Math.random() * 6)];
-  } else {
-    message = [
-      'Potential privilege escalation attempt',
-      'Suspicious outbound data transfer',
-      'Unauthorized resource access',
-      'Database access from unauthorized location',
-      'Potential data exfiltration detected',
-      'Malicious script execution attempt'
-    ][Math.floor(Math.random() * 6)];
-  }
-  
+  const classifications: LogClassification[] = ['safe', 'warning', 'threat'];
+  const resources = ['Authentication Service', 'DB-002', 'Backup Service', 'File Upload Service', 'APP-001', 'Firewall', 'Deployment Service', 'WEB-001', 'Access Control', 'Database Security'];
+  const sources = ['Firewall', 'Monitoring System', 'Backup System', 'Antivirus', 'Network Monitoring', 'Intrusion Detection System', 'Authorization System'];
+
+  const randomItem = (array: any[]) => array[Math.floor(Math.random() * array.length)];
+
+  const severity = randomItem(severities);
+  const classification = randomItem(classifications);
+  const resource = randomItem(resources);
+  const source = randomItem(sources);
+
+  const message = `Log from ${resource} with severity ${severity}`;
+
   return {
-    id: Date.now().toString(),
+    id: uuidv4(),
     timestamp: new Date().toISOString(),
-    message,
-    resource: randomResource,
-    severity: randomSeverity,
-    classification: randomClassification,
-    source: `Cloud ${randomResource}`,
-    user: randomUser,
-    details: randomClassification !== 'safe' ? `Details for ${message.toLowerCase()}` : undefined
+    message: message,
+    resource: resource,
+    severity: severity,
+    classification: classification,
+    source: source,
+    user: Math.random() > 0.5 ? 'SomeUser' : undefined,
+    details: Math.random() > 0.5 ? 'Some details about the log' : undefined,
   };
 };
