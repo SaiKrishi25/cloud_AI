@@ -3,11 +3,27 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Header from '@/components/Header';
 import SearchFilters from '@/components/SearchFilters';
 import StatusPanel from '@/components/StatusPanel';
+import GCPIntegration, { GCPCredentials } from '@/components/GCPIntegration';
 import LogList from '@/components/LogList';
 import { LogEntry, LogClassification } from '@/types/log';
 import { mockLogs, generateNewLog } from '@/data/mockLogs';
 import { toast } from '@/components/ui/sonner';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Settings, ChevronRight, ChevronDown } from 'lucide-react';
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetDescription, 
+  SheetHeader, 
+  SheetTitle, 
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 
 const Dashboard = () => {
   const [logs, setLogs] = useState<LogEntry[]>([...mockLogs]);
@@ -21,6 +37,14 @@ const Dashboard = () => {
   const [threatCount, setThreatCount] = useState(0);
   const [logsProcessed, setLogsProcessed] = useState(2834);
   const [threatPercentage, setThreatPercentage] = useState(8);
+  const [gcpIntegration, setGcpIntegration] = useState<GCPCredentials | null>(null);
+  const [logHistory, setLogHistory] = useState([
+    { time: '00:00', safe: 12, warning: 3, threat: 1 },
+    { time: '01:00', safe: 15, warning: 2, threat: 0 },
+    { time: '02:00', safe: 18, warning: 4, threat: 2 },
+    { time: '03:00', safe: 14, warning: 2, threat: 1 },
+    { time: '04:00', safe: 20, warning: 5, threat: 2 },
+  ]);
   
   // Initialize unique resources
   useEffect(() => {
@@ -42,7 +66,39 @@ const Dashboard = () => {
       const calculatedPercentage = Math.round((threats * 1.0 + warnings * 0.3) / total * 100);
       setThreatPercentage(calculatedPercentage);
     }
-  }, [logs]);
+    
+    // Update log history with latest counts (for the current hour)
+    const now = new Date();
+    const hourStr = now.getHours() + ':00';
+    
+    setLogHistory(prev => {
+      // Check if we already have an entry for the current hour
+      const existingIndex = prev.findIndex(entry => entry.time === hourStr);
+      
+      if (existingIndex >= 0) {
+        // Update existing entry
+        const newHistory = [...prev];
+        newHistory[existingIndex] = {
+          time: hourStr,
+          safe: safeCount,
+          warning: warningCount,
+          threat: threatCount
+        };
+        return newHistory;
+      } else {
+        // Add new entry
+        return [
+          ...prev,
+          {
+            time: hourStr,
+            safe: safeCount,
+            warning: warningCount,
+            threat: threatCount
+          }
+        ].slice(-24); // Keep only the last 24 entries
+      }
+    });
+  }, [logs, safeCount, warningCount, threatCount]);
   
   // Filter logs based on search and filters
   useEffect(() => {
@@ -70,9 +126,37 @@ const Dashboard = () => {
     setFilteredLogs(filtered);
   }, [logs, searchTerm, classificationFilter, resourceFilter]);
   
+  // Handle GCP integration
+  const handleGCPIntegration = (credentials: GCPCredentials) => {
+    setGcpIntegration(credentials);
+    
+    // If GCP is enabled, adjust the log simulation rate
+    if (credentials.enabled) {
+      // Clear existing interval and set a faster one
+      clearInterval(simulationInterval.current);
+      
+      simulationInterval.current = setInterval(() => {
+        const newLog = generateNewLog();
+        setLogs(prevLogs => [newLog, ...prevLogs]);
+        setLogsProcessed(prev => prev + 1);
+        
+        // Show toast notification for threats
+        if (newLog.classification === 'threat') {
+          toast("Security Threat Detected", {
+            description: newLog.message,
+            duration: 5000,
+            icon: <AlertCircle className="h-4 w-4 text-destructive" />,
+          });
+        }
+      }, 3000); // New log every 3 seconds for "real" GCP integration
+    }
+  };
+  
   // Simulation of incoming logs
+  const simulationInterval = React.useRef<number | null>(null);
+  
   useEffect(() => {
-    const interval = setInterval(() => {
+    simulationInterval.current = setInterval(() => {
       const newLog = generateNewLog();
       setLogs(prevLogs => [newLog, ...prevLogs]);
       setLogsProcessed(prev => prev + 1);
@@ -87,7 +171,11 @@ const Dashboard = () => {
       }
     }, 8000); // New log every 8 seconds
     
-    return () => clearInterval(interval);
+    return () => {
+      if (simulationInterval.current !== null) {
+        clearInterval(simulationInterval.current);
+      }
+    };
   }, []);
   
   return (
@@ -103,25 +191,65 @@ const Dashboard = () => {
           <StatusPanel 
             logsProcessed={logsProcessed}
             threatPercentage={threatPercentage}
-          />
-          
-          <SearchFilters 
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            classificationFilter={classificationFilter}
-            setClassificationFilter={setClassificationFilter}
-            resourceFilter={resourceFilter}
-            setResourceFilter={setResourceFilter}
-            resources={resources}
+            logHistory={logHistory}
           />
           
           <div className="bg-card p-4">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Log Stream</h2>
-              <span className="text-sm text-muted-foreground">
-                Showing {filteredLogs.length} of {logs.length} logs
-              </span>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  Showing {filteredLogs.length} of {logs.length} logs
+                </span>
+                
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <SheetHeader>
+                      <SheetTitle>Dashboard Settings</SheetTitle>
+                      <SheetDescription>
+                        Configure GCP Cloud Logging integration and other settings
+                      </SheetDescription>
+                    </SheetHeader>
+                    
+                    <div className="mt-6">
+                      <Accordion type="single" collapsible defaultValue="gcp">
+                        <AccordionItem value="gcp">
+                          <AccordionTrigger>GCP Cloud Logging</AccordionTrigger>
+                          <AccordionContent>
+                            <GCPIntegration onIntegrationComplete={handleGCPIntegration} />
+                          </AccordionContent>
+                        </AccordionItem>
+                        
+                        <AccordionItem value="settings">
+                          <AccordionTrigger>Dashboard Settings</AccordionTrigger>
+                          <AccordionContent>
+                            <div className="space-y-4 text-sm">
+                              <p>Additional dashboard settings will be available here.</p>
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </div>
             </div>
+            
+            <SearchFilters 
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              classificationFilter={classificationFilter}
+              setClassificationFilter={setClassificationFilter}
+              resourceFilter={resourceFilter}
+              setResourceFilter={setResourceFilter}
+              resources={resources}
+            />
             
             <LogList logs={filteredLogs} />
           </div>
