@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import SearchFilters from '@/components/SearchFilters';
 import StatusPanel from '@/components/StatusPanel';
@@ -45,8 +45,8 @@ const Dashboard = () => {
     { time: '04:00', safe: 20, warning: 5, threat: 2 },
   ]);
   
-  // Fix the type for the interval reference to be NodeJS.Timeout | null
-  const simulationInterval = useRef<NodeJS.Timeout | null>(null);
+  // Fix the type for the interval reference
+  const simulationInterval = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Initialize unique resources
   useEffect(() => {
@@ -139,7 +139,7 @@ const Dashboard = () => {
         clearInterval(simulationInterval.current);
       }
       
-      simulationInterval.current = window.setInterval(() => {
+      simulationInterval.current = setInterval(() => {
         const newLog = generateNewLog();
         setLogs(prevLogs => [newLog, ...prevLogs]);
         setLogsProcessed(prev => prev + 1);
@@ -158,7 +158,7 @@ const Dashboard = () => {
   
   // Simulation of incoming logs
   useEffect(() => {
-    simulationInterval.current = window.setInterval(() => {
+    simulationInterval.current = setInterval(() => {
       const newLog = generateNewLog();
       setLogs(prevLogs => [newLog, ...prevLogs]);
       setLogsProcessed(prev => prev + 1);
