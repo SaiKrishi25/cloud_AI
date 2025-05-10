@@ -28,7 +28,6 @@ const Index = () => {
           </h1>
           
           <p className="text-xl text-[#666666] mb-8 max-w-2xl mx-auto">
-            Real-time monitoring and threat detection for your Google Cloud Platform. Connect your GCP account to get started with intelligent log analysis.
           </p>
           
           {!showGcpPanel ? (
