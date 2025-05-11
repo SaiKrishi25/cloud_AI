@@ -159,7 +159,7 @@ const Dashboard = () => {
             icon: <AlertCircle className="h-4 w-4 text-destructive" />,
           });
         }
-      }, 3000); // New log every 3 seconds for "real" GCP integration
+      }, 30000); // New log every 30 seconds for "real" GCP integration
     }
   };
   
@@ -178,7 +178,7 @@ const Dashboard = () => {
           icon: <AlertCircle className="h-4 w-4 text-destructive" />,
         });
       }
-    }, 8000); // New log every 8 seconds
+    }, 30000); // New log every 30 seconds
     
     return () => {
       if (simulationInterval.current !== null) {

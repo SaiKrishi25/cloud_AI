@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Code, Send, Cloud } from 'lucide-react';
+import { Code, Send, Play, Copy } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SecurityAssistant = () => {
   const [query, setQuery] = useState('');
@@ -14,6 +14,9 @@ const SecurityAssistant = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [apiKey, setApiKey] = useLocalStorage('llm-api-key', '');
   const [showApiKeyInput, setShowApiKeyInput] = useState(!apiKey);
+  const [activeTab, setActiveTab] = useState("command");
+  const [sandboxOutput, setSandboxOutput] = useState('');
+  const [isRunning, setIsRunning] = useState(false);
   
   const examples = [
     "Find all publicly accessible S3 buckets in my AWS environment",
@@ -36,22 +39,23 @@ const SecurityAssistant = () => {
     
     setIsProcessing(true);
     setResponse('');
+    setSandboxOutput('');
     
     try {
       // Simulate LLM processing
       setTimeout(() => {
         const responses = {
           "Find all publicly accessible S3 buckets in my AWS environment": 
-            `# Command to find public S3 buckets:\n\n\`\`\`bash\naws s3api list-buckets --query 'Buckets[].Name' | jq -r '.[]' | xargs -I {} aws s3api get-bucket-policy-status --bucket {} --query 'PolicyStatus.IsPublic' 2>/dev/null | grep true --before 1\n\`\`\``,
+            `aws s3api list-buckets --query 'Buckets[].Name' | jq -r '.[]' | xargs -I {} aws s3api get-bucket-policy-status --bucket {} --query 'PolicyStatus.IsPublic' 2>/dev/null | grep true --before 1`,
           "List resources with excessive IAM permissions": 
-            `# AWS IAM Access Analyzer command:\n\n\`\`\`bash\naws accessanalyzer start-policy-generation --policy-generation-details '{\"principalArn\":\"arn:aws:iam::123456789012:role/MyRole\"}'\n\`\`\`\n\n# GCP command to list over-privileged service accounts:\n\n\`\`\`bash\ngcloud projects get-iam-policy [PROJECT_ID] --format=json | jq '.bindings[] | select(.role | contains("roles/owner") or contains("roles/editor"))'\n\`\`\``,
+            `aws accessanalyzer start-policy-generation --policy-generation-details '{\"principalArn\":\"arn:aws:iam::123456789012:role/MyRole\"}'`,
           "Check for unencrypted databases in my cloud environment": 
-            `# AWS RDS encryption check:\n\n\`\`\`bash\naws rds describe-db-instances --query 'DBInstances[*].[DBInstanceIdentifier,StorageEncrypted]' --output table\n\`\`\`\n\n# GCP Cloud SQL encryption check:\n\n\`\`\`bash\ngcloud sql instances list --format="table(name, settings.diskEncryptionStatus)"\n\`\`\``,
+            `aws rds describe-db-instances --query 'DBInstances[*].[DBInstanceIdentifier,StorageEncrypted]' --output table`,
           "Detect instances without proper security groups": 
-            `# AWS EC2 instances with open security groups:\n\n\`\`\`bash\naws ec2 describe-security-groups --filters Name=ip-permission.cidr,Values='0.0.0.0/0' --query 'SecurityGroups[*].[GroupId,GroupName]' --output table\n\`\`\`\n\n# Then find which instances use these security groups:\n\n\`\`\`bash\naws ec2 describe-instances --filters Name=instance.group-id,Values=sg-XXXXX --query 'Reservations[*].Instances[*].[InstanceId,State.Name]' --output table\n\`\`\``
+            `aws ec2 describe-security-groups --filters Name=ip-permission.cidr,Values='0.0.0.0/0' --query 'SecurityGroups[*].[GroupId,GroupName]' --output table`
         };
         
-        const defaultResponse = `# Analyzing your security query...\n\n\`\`\`bash\n# Based on your query: "${query}"\n# Here's a recommended command:\n\naws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=ConsoleLogin\n\`\`\`\n\nThis command will help you track console login events. You may need to customize it further based on your specific requirements.`;
+        const defaultResponse = `aws cloudtrail lookup-events --lookup-attributes AttributeKey=EventName,AttributeValue=ConsoleLogin`;
         
         setResponse(responses[query] || defaultResponse);
         setIsProcessing(false);
@@ -65,6 +69,44 @@ const SecurityAssistant = () => {
 
   const handleExampleClick = (example: string) => {
     setQuery(example);
+  };
+  
+  const runInSandbox = () => {
+    if (!response) return;
+    
+    setIsRunning(true);
+    setSandboxOutput('');
+    
+    // Simulate running the command in a sandbox environment
+    setTimeout(() => {
+      const outputs = {
+        "Find all publicly accessible S3 buckets in my AWS environment": 
+          `"my-public-bucket-123"\nPolicyStatus:\n  IsPublic: true\n\n"company-website-assets"\nPolicyStatus:\n  IsPublic: true\n\n"analytics-reports-public"\nPolicyStatus:\n  IsPublic: true`,
+        "List resources with excessive IAM permissions": 
+          `{\n  "jobId": "aae12ed5-5850-4a72-94bf-82e3fe5dbb79",\n  "policyGenerationDetails": {\n    "principalArn": "arn:aws:iam::123456789012:role/MyRole"\n  }\n}\n\nExcessive permissions found:\n- s3:* on all resources\n- ec2:* on all resources\n- dynamodb:* on all resources`,
+        "Check for unencrypted databases in my cloud environment": 
+          `--------------------------------------\n| DBInstanceIdentifier | StorageEncrypted |\n--------------------------------------\n| production-db-1      | false            |\n| analytics-db         | true             |\n| customer-data        | false            |\n--------------------------------------`,
+        "Detect instances without proper security groups": 
+          `-----------------------------\n| GroupId       | GroupName      |\n-----------------------------\n| sg-0123456789 | public-access  |\n| sg-9876543210 | default        |\n| sg-1a2b3c4d5e | web-servers    |\n-----------------------------\n\nInstances with vulnerable security groups:\n---------------------------------\n| InstanceId    | State         |\n---------------------------------\n| i-0abc123def  | running       |\n| i-9xyz876wvu  | running       |\n---------------------------------`
+      };
+      
+      const defaultOutput = `Looking up CloudTrail events...\n\n--------------------------------------------\n| EventName  | Username | EventTime           |\n--------------------------------------------\n| ConsoleLogin| admin     | 2023-05-11T14:32:05Z |\n| ConsoleLogin| readonly  | 2023-05-11T13:45:22Z |\n| ConsoleLogin| readonly  | 2023-05-11T12:30:10Z |\n--------------------------------------------`;
+      
+      let output = '';
+      
+      for (const [example, exampleOutput] of Object.entries(outputs)) {
+        if (query === example) {
+          output = exampleOutput;
+          break;
+        }
+      }
+      
+      setSandboxOutput(output || defaultOutput);
+      setIsRunning(false);
+    }, 2000);
+    
+    // Switch to output tab
+    setActiveTab("output");
   };
 
   return (
@@ -100,7 +142,8 @@ const SecurityAssistant = () => {
                     toast.success("API key saved");
                     setShowApiKeyInput(false);
                   } else {
-                    toast.error("Please enter a valid API key");
+                    toast.warning("Using demo mode");
+                    setShowApiKeyInput(false);
                   }
                 }}
               >
@@ -113,7 +156,7 @@ const SecurityAssistant = () => {
           </div>
         ) : (
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">Using API key: ••••••••••</span>
+            <span className="text-sm text-muted-foreground">{apiKey ? "Using API key: ••••••••••" : "Using demo mode"}</span>
             <Button variant="ghost" size="sm" onClick={() => setShowApiKeyInput(true)}>
               Change
             </Button>
@@ -159,26 +202,86 @@ const SecurityAssistant = () => {
         
         {response && (
           <div className="mt-4">
-            <label className="text-sm font-medium mb-1 block">
-              Security Command
-            </label>
-            <Textarea
-              value={response}
-              readOnly
-              className="font-mono text-sm h-[200px] overflow-auto bg-gray-50"
-            />
-            <div className="flex justify-end mt-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(response);
-                  toast.success("Command copied to clipboard");
-                }}
-              >
-                Copy to clipboard
-              </Button>
-            </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid grid-cols-2 mb-2">
+                <TabsTrigger value="command">Command</TabsTrigger>
+                <TabsTrigger value="output">Output</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="command">
+                <div className="rounded-md bg-black p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex space-x-1">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 text-white hover:text-white hover:bg-white/10"
+                      onClick={() => {
+                        navigator.clipboard.writeText(response);
+                        toast.success("Command copied to clipboard");
+                      }}
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy
+                    </Button>
+                  </div>
+                  <pre className="font-mono text-sm text-green-400 overflow-auto whitespace-pre-wrap max-h-[200px]">
+                    $ {response}
+                  </pre>
+                  <div className="mt-2 flex justify-end">
+                    <Button 
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      onClick={runInSandbox}
+                    >
+                      <Play className="h-3 w-3 mr-1" /> 
+                      Run in sandbox
+                    </Button>
+                  </div>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="output">
+                <div className="rounded-md bg-black p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex space-x-1">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 text-white hover:text-white hover:bg-white/10"
+                      onClick={() => {
+                        navigator.clipboard.writeText(sandboxOutput);
+                        toast.success("Output copied to clipboard");
+                      }}
+                    >
+                      <Copy className="h-3 w-3 mr-1" />
+                      Copy
+                    </Button>
+                  </div>
+                  {isRunning ? (
+                    <div className="font-mono text-sm text-white">
+                      Running command...
+                    </div>
+                  ) : sandboxOutput ? (
+                    <pre className="font-mono text-sm text-white overflow-auto whitespace-pre-wrap max-h-[200px]">
+                      {sandboxOutput}
+                    </pre>
+                  ) : (
+                    <div className="font-mono text-sm text-gray-400 italic">
+                      Run the command to see output here
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </CardContent>

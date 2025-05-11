@@ -66,8 +66,8 @@ const StatusPanel = ({ logsProcessed, threatPercentage, logHistory = [] }: Statu
   };
 
   return (
-    <div className="grid grid-cols-1 gap-4 mb-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 mb-4 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
         <Card>
           <CardContent className="p-4 flex items-center">
             <Activity className="h-8 w-8 text-primary mr-4" />
@@ -112,14 +112,14 @@ const StatusPanel = ({ logsProcessed, threatPercentage, logHistory = [] }: Statu
         </Card>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+        <Card className="w-full">
           <CardContent className="p-4">
             <h3 className="text-lg font-medium mb-2 flex items-center">
               <PieChart className="h-5 w-5 mr-2 text-primary" />
               Log Activity Timeline
             </h3>
-            <div className="h-64">
+            <div className="h-64 w-full">
               <ChartContainer config={chartConfig}>
                 <React.Fragment>
                   <ResponsiveContainer width="100%" height="100%">
@@ -140,13 +140,13 @@ const StatusPanel = ({ logsProcessed, threatPercentage, logHistory = [] }: Statu
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="w-full">
           <CardContent className="p-4">
             <h3 className="text-lg font-medium mb-2 flex items-center">
               <PieChart className="h-5 w-5 mr-2 text-primary" />
               Log Distribution by Resource
             </h3>
-            <div className="h-64">
+            <div className="h-64 w-full">
               <ChartContainer config={chartConfig}>
                 <React.Fragment>
                   <ResponsiveContainer width="100%" height="100%">
