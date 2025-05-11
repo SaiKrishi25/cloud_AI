@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import SearchFilters from '@/components/SearchFilters';
@@ -23,6 +24,11 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SecurityAssistant from '@/components/SecurityAssistant';
+import MisconfigurationDetection from '@/components/MisconfigurationDetection';
+import PublicExposureAnalysis from '@/components/PublicExposureAnalysis';
+import LogAnalysisComponent from '@/components/LogAnalysisComponent';
 
 const Dashboard = () => {
   const [logs, setLogs] = useState<LogEntry[]>([...mockLogs]);
@@ -44,9 +50,10 @@ const Dashboard = () => {
     { time: '03:00', safe: 14, warning: 2, threat: 1 },
     { time: '04:00', safe: 20, warning: 5, threat: 2 },
   ]);
+  const [activeTab, setActiveTab] = useState("logs");
   
   // Fix the type for the interval reference
-  const simulationInterval = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const simulationInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   
   // Initialize unique resources
   useEffect(() => {
@@ -197,64 +204,91 @@ const Dashboard = () => {
           />
           
           <div className="bg-card p-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Log Stream</h2>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid grid-cols-4 mb-4">
+                <TabsTrigger value="logs">Log Stream</TabsTrigger>
+                <TabsTrigger value="assistant">AI Assistant</TabsTrigger>
+                <TabsTrigger value="misconfig">Misconfigurations</TabsTrigger>
+                <TabsTrigger value="exposure">Exposure Analysis</TabsTrigger>
+              </TabsList>
               
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">
-                  Showing {filteredLogs.length} of {logs.length} logs
-                </span>
-                
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Settings className="h-4 w-4" />
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Dashboard Settings</SheetTitle>
-                      <SheetDescription>
-                        Configure GCP Cloud Logging integration and other settings
-                      </SheetDescription>
-                    </SheetHeader>
+              <TabsContent value="logs">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Log Stream</h2>
+                  
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      Showing {filteredLogs.length} of {logs.length} logs
+                    </span>
                     
-                    <div className="mt-6">
-                      <Accordion type="single" collapsible defaultValue="gcp">
-                        <AccordionItem value="gcp">
-                          <AccordionTrigger>GCP Cloud Logging</AccordionTrigger>
-                          <AccordionContent>
-                            <GCPIntegration onIntegrationComplete={handleGCPIntegration} />
-                          </AccordionContent>
-                        </AccordionItem>
+                    <Sheet>
+                      <SheetTrigger asChild>
+                        <Button variant="outline" size="icon">
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent>
+                        <SheetHeader>
+                          <SheetTitle>Dashboard Settings</SheetTitle>
+                          <SheetDescription>
+                            Configure GCP Cloud Logging integration and other settings
+                          </SheetDescription>
+                        </SheetHeader>
                         
-                        <AccordionItem value="settings">
-                          <AccordionTrigger>Dashboard Settings</AccordionTrigger>
-                          <AccordionContent>
-                            <div className="space-y-4 text-sm">
-                              <p>Additional dashboard settings will be available here.</p>
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </div>
-                  </SheetContent>
-                </Sheet>
-              </div>
-            </div>
-            
-            <SearchFilters 
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              classificationFilter={classificationFilter}
-              setClassificationFilter={setClassificationFilter}
-              resourceFilter={resourceFilter}
-              setResourceFilter={setResourceFilter}
-              resources={resources}
-            />
-            
-            <LogList logs={filteredLogs} />
+                        <div className="mt-6">
+                          <Accordion type="single" collapsible defaultValue="gcp">
+                            <AccordionItem value="gcp">
+                              <AccordionTrigger>GCP Cloud Logging</AccordionTrigger>
+                              <AccordionContent>
+                                <GCPIntegration onIntegrationComplete={handleGCPIntegration} />
+                              </AccordionContent>
+                            </AccordionItem>
+                            
+                            <AccordionItem value="settings">
+                              <AccordionTrigger>Dashboard Settings</AccordionTrigger>
+                              <AccordionContent>
+                                <div className="space-y-4 text-sm">
+                                  <p>Additional dashboard settings will be available here.</p>
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          </Accordion>
+                        </div>
+                      </SheetContent>
+                    </Sheet>
+                  </div>
+                </div>
+                
+                <SearchFilters 
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  classificationFilter={classificationFilter}
+                  setClassificationFilter={setClassificationFilter}
+                  resourceFilter={resourceFilter}
+                  setResourceFilter={setResourceFilter}
+                  resources={resources}
+                />
+                
+                <LogList logs={filteredLogs} />
+              </TabsContent>
+              
+              <TabsContent value="assistant">
+                <SecurityAssistant />
+              </TabsContent>
+              
+              <TabsContent value="misconfig">
+                <MisconfigurationDetection />
+              </TabsContent>
+              
+              <TabsContent value="exposure">
+                <PublicExposureAnalysis />
+              </TabsContent>
+            </Tabs>
           </div>
+        </div>
+        
+        <div className="mt-6 grid grid-cols-1 gap-6">
+          <LogAnalysisComponent />
         </div>
       </div>
     </div>

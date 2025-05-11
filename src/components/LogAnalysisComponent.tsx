@@ -184,7 +184,7 @@ const LogAnalysisComponent = () => {
                 <Button variant="ghost" size="sm" className="h-7 px-2">
                   <Filter className="h-3 w-3 mr-1" /> Filter
                 </Button>
-                <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => navigate('/dashboard')}>
+                <Button variant="ghost" size="sm" className="h-7 px-2">
                   <Eye className="h-3 w-3 mr-1" /> View All <ArrowRight className="h-3 w-3 ml-1" />
                 </Button>
               </div>
