@@ -3,13 +3,19 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Cloud, ArrowDown, ArrowUp } from 'lucide-react';
+import { Cloud, Shield, AlertTriangle, Search } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import GCPIntegration, { GCPCredentials } from '@/components/GCPIntegration';
+import SecurityAssistant from '@/components/SecurityAssistant';
+import MisconfigurationDetection from '@/components/MisconfigurationDetection';
+import PublicExposureAnalysis from '@/components/PublicExposureAnalysis';
+import LogAnalysisComponent from '@/components/LogAnalysisComponent';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Index = () => {
   const navigate = useNavigate();
   const [showGcpPanel, setShowGcpPanel] = useState(false);
+  const [activeTab, setActiveTab] = useState("connect");
   
   const handleGCPIntegration = (credentials: GCPCredentials) => {
     // Navigate to dashboard after successful connection
@@ -28,77 +34,92 @@ const Index = () => {
           </h1>
           
           <p className="text-xl text-[#666666] mb-8 max-w-2xl mx-auto">
+            Proactive cloud security with AI-powered analysis, threat detection, and automated remediation.
           </p>
           
-          {!showGcpPanel ? (
-            <Button 
-              size="lg" 
-              className="bg-[#33C3F0] hover:bg-[#1EAEDB] text-white px-8 py-6 h-auto text-lg"
-              onClick={() => setShowGcpPanel(true)}
-            >
-              <Cloud className="h-5 w-5 mr-2" />
-              Connect to Google Cloud
-            </Button>
-          ) : (
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setShowGcpPanel(false)}
-              className="mb-4"
-            >
-              <ArrowUp className="h-4 w-4 mr-2" />
-              Hide Connection Panel
-            </Button>
-          )}
-        </div>
-        
-        {showGcpPanel && (
-          <div className="mt-8 w-full max-w-2xl animate-fade-in">
-            <Card className="border-[#33C3F0]/20 shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-[#222222]">Connect to Google Cloud Platform</CardTitle>
-                <CardDescription>
-                  Set up your GCP integration to enable real-time log monitoring
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent>
-                <GCPIntegration onIntegrationComplete={handleGCPIntegration} />
-              </CardContent>
-              
-              <CardFooter className="flex justify-between border-t p-4 bg-gray-50">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowGcpPanel(false)}
-                >
-                  Cancel
-                </Button>
-                
-                <Button
-                  variant="ghost"
-                  onClick={() => navigate('/dashboard')}
-                >
-                  Continue without connecting
-                </Button>
-              </CardFooter>
-            </Card>
+          <Tabs 
+            defaultValue="connect" 
+            className="w-full"
+            value={activeTab}
+            onValueChange={setActiveTab}
+          >
+            <TabsList className="grid grid-cols-2 sm:grid-cols-4 mb-6">
+              <TabsTrigger value="connect">Connect</TabsTrigger>
+              <TabsTrigger value="assistant">AI Assistant</TabsTrigger>
+              <TabsTrigger value="misconfig">Misconfigurations</TabsTrigger>
+              <TabsTrigger value="exposure">Exposure Analysis</TabsTrigger>
+            </TabsList>
             
-            <Alert className="mt-4 bg-blue-50 border-[#33C3F0]/20">
-              <Cloud className="h-4 w-4 text-[#33C3F0]" />
-              <AlertTitle>Demo Mode Available</AlertTitle>
-              <AlertDescription>
-                You can explore the dashboard with simulated data without connecting your GCP account.
+            <TabsContent value="connect" className="mt-4">
+              {!showGcpPanel ? (
                 <Button 
-                  variant="link" 
-                  onClick={() => navigate('/dashboard')}
-                  className="text-[#33C3F0] p-0 h-auto"
+                  size="lg" 
+                  className="bg-[#33C3F0] hover:bg-[#1EAEDB] text-white px-8 py-6 h-auto text-lg"
+                  onClick={() => setShowGcpPanel(true)}
                 >
-                  Continue to demo
+                  <Cloud className="h-5 w-5 mr-2" />
+                  Connect to Google Cloud
                 </Button>
-              </AlertDescription>
-            </Alert>
-          </div>
-        )}
+              ) : (
+                <Card className="border-[#33C3F0]/20 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-[#222222]">Connect to Google Cloud Platform</CardTitle>
+                    <CardDescription>
+                      Set up your GCP integration to enable real-time log monitoring
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <GCPIntegration onIntegrationComplete={handleGCPIntegration} />
+                  </CardContent>
+                  
+                  <CardFooter className="flex justify-between border-t p-4 bg-gray-50">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowGcpPanel(false)}
+                    >
+                      Cancel
+                    </Button>
+                    
+                    <Button
+                      variant="ghost"
+                      onClick={() => navigate('/dashboard')}
+                    >
+                      Continue without connecting
+                    </Button>
+                  </CardFooter>
+                </Card>
+              )}
+              
+              <Alert className="mt-4 bg-blue-50 border-[#33C3F0]/20">
+                <Cloud className="h-4 w-4 text-[#33C3F0]" />
+                <AlertTitle>Demo Mode Available</AlertTitle>
+                <AlertDescription>
+                  You can explore the dashboard with simulated data without connecting your GCP account.
+                  <Button 
+                    variant="link" 
+                    onClick={() => navigate('/dashboard')}
+                    className="text-[#33C3F0] p-0 h-auto"
+                  >
+                    Continue to demo
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            </TabsContent>
+            
+            <TabsContent value="assistant" className="mt-4">
+              <SecurityAssistant />
+            </TabsContent>
+            
+            <TabsContent value="misconfig" className="mt-4">
+              <MisconfigurationDetection />
+            </TabsContent>
+            
+            <TabsContent value="exposure" className="mt-4">
+              <PublicExposureAnalysis />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );
