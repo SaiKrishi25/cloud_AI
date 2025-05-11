@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Cloud } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import GCPIntegration, { GCPCredentials } from '@/components/GCPIntegration';
 
 const Index = () => {
@@ -62,29 +61,13 @@ const Index = () => {
                 </Button>
                 
                 <Button
-                  variant="ghost"
                   onClick={() => navigate('/dashboard')}
                 >
-                  Continue without connecting
+                  Continue
                 </Button>
               </CardFooter>
             </Card>
           )}
-          
-          <Alert className="mt-4 bg-blue-50 border-[#33C3F0]/20">
-            <Cloud className="h-4 w-4 text-[#33C3F0]" />
-            <AlertTitle>Demo Mode Available</AlertTitle>
-            <AlertDescription>
-              You can explore the dashboard with simulated data without connecting your GCP account.
-              <Button 
-                variant="link" 
-                onClick={() => navigate('/dashboard')}
-                className="text-[#33C3F0] p-0 h-auto"
-              >
-                Continue to demo
-              </Button>
-            </AlertDescription>
-          </Alert>
         </div>
       </div>
     </div>

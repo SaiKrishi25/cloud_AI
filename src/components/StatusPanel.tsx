@@ -112,7 +112,7 @@ const StatusPanel = ({ logsProcessed, threatPercentage, logHistory = [] }: Statu
         </Card>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
         <Card className="w-full">
           <CardContent className="p-4">
             <h3 className="text-lg font-medium mb-2 flex items-center">
@@ -123,7 +123,7 @@ const StatusPanel = ({ logsProcessed, threatPercentage, logHistory = [] }: Statu
               <ChartContainer config={chartConfig}>
                 <React.Fragment>
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData}>
+                    <LineChart data={chartData} margin={{ top: 5, right: 20, bottom: 20, left: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                       <XAxis dataKey="time" stroke="hsl(var(--muted-foreground))" />
                       <YAxis stroke="hsl(var(--muted-foreground))" />
@@ -150,7 +150,7 @@ const StatusPanel = ({ logsProcessed, threatPercentage, logHistory = [] }: Statu
               <ChartContainer config={chartConfig}>
                 <React.Fragment>
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={barData}>
+                    <BarChart data={barData} margin={{ top: 5, right: 20, bottom: 20, left: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                       <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
                       <YAxis stroke="hsl(var(--muted-foreground))" />

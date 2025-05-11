@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import SearchFilters from '@/components/SearchFilters';
@@ -159,7 +158,7 @@ const Dashboard = () => {
             icon: <AlertCircle className="h-4 w-4 text-destructive" />,
           });
         }
-      }, 30000); // New log every 30 seconds for "real" GCP integration
+      }, 10000); // Changed to 10 seconds for real GCP integration
     }
   };
   
@@ -178,7 +177,7 @@ const Dashboard = () => {
           icon: <AlertCircle className="h-4 w-4 text-destructive" />,
         });
       }
-    }, 30000); // New log every 30 seconds
+    }, 10000); // Changed to 10 seconds for log simulation
     
     return () => {
       if (simulationInterval.current !== null) {
